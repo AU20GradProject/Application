@@ -10,7 +10,9 @@
 
 
 
-#include "../AutosarOS/Os_Headers/OsInterface_Headers/Os.h"
+#include "../OS/Os_Headers/OsInterface_Headers/Os.h"
+#include "UART/test.h"
+
 
 /* set pending bit of PendSv exception and set stack pointer to MSP */
 
@@ -101,57 +103,57 @@ CONSTP2FUNC( void, OS_CONFIG_DATA, OsTasksNames_Array [TASKS_NUMBER] ) (void) =
 int main(void)
 {
 
-    PEND_SV_PRIORITY ;
+//    PEND_SV_PRIORITY ;
+//
+//    /* set MSP to address 0x20008000 */
+//    __asm ( " MOV R10, #0x8000 " ) ;
+//    __asm ( " MOVT R10, #0x2000 " ) ;
+//    __asm ( " MSR MSP, R10 " ) ;
+//
+//    /* assign stack pointer to PSP */
+//    __asm ( " MRS R9, CONTROL " ) ;
+//    __asm ( " ORR R9, R9, #0x02 " ) ;
+//    __asm ( " MSR CONTROL, R9 " ) ;
+//
+//    __asm ( " MOV R10, #0x7000 " ) ;
+//    __asm ( " MOVT R10, #0x2000 " ) ;
+//    __asm ( " MSR PSP, R10 " ) ;
+//
+//
+//
+//    /* initialize portf */
+//    * ( ( volatile unsigned long * ) ( 0x400FE000 + 0x608 ) ) |= 0X3F ;         /* enable clock */
+//    * ( ( volatile unsigned long * ) ( 0x400FE000 + 0x06C ) ) |= (1<<5) ;       /* enble AHB for port F */
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x520 ) ) |= 0x4C4F434B ;   /* unlock GPIOCR  */
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x524 ) ) |= 0b01 ;         /* unlock PF0  */
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x400 ) ) &= ~(0b10001) ;   /* define input in port f */
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x400 ) ) |= (0b01110) ;    /* define output in port f */
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x420 ) ) &= ~(0b11111) ;   /* configure port f as gpio pin */
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x508 ) ) |= (0b11111) ;    /* drive port f with 8-ma  */
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x510 ) ) |= (0b10001) ;    /* put pull up resistor for port f 0,4  */
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x51C ) ) |= (0b11111) ;    /* enable port f as dio  */
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x404 ) ) &= ~(0b11111) ;
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x408 ) ) &= ~(0b11111) ;
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x40C ) ) &= ~(0b11111) ;
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x41C ) ) |= (0b11111) ;
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x410 ) ) &= ~(0b11111) ;
+//    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x410 ) ) |= (0b00001) ;
+//
+//
+//    ActivateTask( TASK_RED_ON ) ;
+//
 
-    /* set MSP to address 0x20008000 */
-    __asm ( " MOV R10, #0x8000 " ) ;
-    __asm ( " MOVT R10, #0x2000 " ) ;
-    __asm ( " MSR MSP, R10 " ) ;
-
-    /* assign stack pointer to PSP */
-    __asm ( " MRS R9, CONTROL " ) ;
-    __asm ( " ORR R9, R9, #0x02 " ) ;
-    __asm ( " MSR CONTROL, R9 " ) ;
-
-    __asm ( " MOV R10, #0x7000 " ) ;
-    __asm ( " MOVT R10, #0x2000 " ) ;
-    __asm ( " MSR PSP, R10 " ) ;
-
-
-
-    /* initialize portf */
-    * ( ( volatile unsigned long * ) ( 0x400FE000 + 0x608 ) ) |= 0X3F ;         /* enable clock */
-    * ( ( volatile unsigned long * ) ( 0x400FE000 + 0x06C ) ) |= (1<<5) ;       /* enble AHB for port F */
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x520 ) ) |= 0x4C4F434B ;   /* unlock GPIOCR  */
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x524 ) ) |= 0b01 ;         /* unlock PF0  */
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x400 ) ) &= ~(0b10001) ;   /* define input in port f */
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x400 ) ) |= (0b01110) ;    /* define output in port f */
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x420 ) ) &= ~(0b11111) ;   /* configure port f as gpio pin */
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x508 ) ) |= (0b11111) ;    /* drive port f with 8-ma  */
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x510 ) ) |= (0b10001) ;    /* put pull up resistor for port f 0,4  */
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x51C ) ) |= (0b11111) ;    /* enable port f as dio  */
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x404 ) ) &= ~(0b11111) ;
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x408 ) ) &= ~(0b11111) ;
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x40C ) ) &= ~(0b11111) ;
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x41C ) ) |= (0b11111) ;
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x410 ) ) &= ~(0b11111) ;
-    * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x410 ) ) |= (0b00001) ;
-
-
-    ActivateTask( TASK_RED_ON ) ;
-
-
-
+    UART_GPIO_init();
+    sendStringPA1("Starting: ");
+    sendStringPA1("\r\n");
+    //delay;
+    Init_Systick();
+    StartScheduleTableAbs( 0, 500 );
+    NextScheduleTable( SCHEDULE_TABLE_1 , SCHEDULE_TABLE_2 );
     while (1)
     {
 
-    LED_R ^= 2 ;
 
-    delay ;
-
-    LED_R ^= 2 ;
-
-    delay ;
 
     }
 
