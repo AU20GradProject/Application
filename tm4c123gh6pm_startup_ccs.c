@@ -323,6 +323,38 @@ void SVCall (void)
 
 void PendSV (void)
 {
+    __asm ( " POP { R8 } " ) ;
+    __asm ( " POP { R9 } " ) ;
+
+
+    __asm ( " MOV R9, #0xFFF9 " ) ;
+    __asm ( " MOVT R9, #0xFFFF " ) ;
+
+
+
+    __asm ( " MRS R10, PSP " ) ;
+    __asm ( " LDMIA R10, {R0-R7} " ) ;
+    __asm ( " ADD R10, R10, #0x20 " ) ;
+    __asm ( " MSR PSP, R10 " ) ;
+
+
+    __asm ( " MRS R10, MSP " ) ;
+    __asm ( " STMDB R10, {R0-R7} " ) ;
+    __asm ( " SUB R10, R10, #0x20 " ) ;
+    __asm ( " MSR MSP, R10 " ) ;
+
+    __asm ( " PUSH { R9 } " ) ;
+    __asm ( " PUSH { R8 } " ) ;
+
+
+
+    __asm ( " MOV LR, #0xFFF9 " ) ;
+    __asm ( " MOVT LR, #0xFFFF " ) ;
+
+
+
+
+
 
     if ( INVALID_TASK != RunningTaskPCB_Index )/* case there's preemption to running task */
     {

@@ -18,6 +18,7 @@
 
 /* set priority of dispatcher to be lowest */
 #define PEND_SV_PRIORITY   *( ( volatile P2VAR( uint32, AUTOMATIC, REGSPACE ) ) 0xE000ED20 ) |= ( 0x07u << 21  )
+#define SYS_TICK_PRIORITY   *( ( volatile P2VAR( uint32, AUTOMATIC, REGSPACE ) ) 0xE000ED20 ) |= ( 0x01u << 29  )
 
 
 
@@ -81,6 +82,7 @@ int main(void)
 {
 
     PEND_SV_PRIORITY ;
+    SYS_TICK_PRIORITY ;
 
     /* set MSP to address 0x20008000 */
     __asm ( " MOV R10, #0x8000 " ) ;
@@ -123,23 +125,21 @@ int main(void)
     * ( ( volatile unsigned long * ) ( 0x4005D000 + 0x410 ) ) |= (0b00001) ;
 
 
-    ActivateTask( TASK_RED_ON ) ;
+    //ActivateTask( TASK_RED_ON ) ;
 
-
-
+    UART_GPIO_init();
+    sendStringPA1("Starting: ");
+    sendStringPA1("\r\n");
+    //delay;
+    Init_Systick();
+    StartScheduleTableAbs( 0, 500 );
+    NextScheduleTable( SCHEDULE_TABLE_1 , SCHEDULE_TABLE_2 );
     while (1)
     {
 
-    LED_R ^= 2 ;
 
-    delay ;
-
-    LED_R ^= 2 ;
-
-    delay ;
 
     }
-
 }
 
 
