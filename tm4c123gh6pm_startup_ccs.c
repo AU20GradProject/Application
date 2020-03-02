@@ -330,7 +330,9 @@ void PendSV (void)
     __asm ( " MOV R9, #0xFFF9 " ) ;
     __asm ( " MOVT R9, #0xFFFF " ) ;
 
-
+    __asm ( " MOV R10, #0x8000 " ) ;
+    __asm ( " MOVT R10, #0x2000 " ) ;
+    __asm ( " MSR MSP, R10 " ) ;
 
     __asm ( " MRS R10, PSP " ) ;
     __asm ( " LDMIA R10, {R0-R7} " ) ;
