@@ -323,15 +323,17 @@ void SVCall (void)
 
 void PendSV (void)
 {
+    /* to save data which is pushed to msp after calling dispatcher */
     __asm ( " POP { R8 } " ) ;
     __asm ( " POP { R9 } " ) ;
 
 
-
+    /* modify to be return using msp not psp */
     __asm ( " MOV R9, #0xFFF9 " ) ;
     __asm ( " MOVT R9, #0xFFFF " ) ;
 
 
+    /* this flag to prevent pending dispatcher call from corrupt data */
     if ( DispatcherLocal_Variable == 0 )
     {
         __asm ( " MRS R10, PSP " ) ;
@@ -340,6 +342,7 @@ void PendSV (void)
         __asm ( " MSR PSP, R10 " ) ;
 
 
+        /* move data from process stack to main stack */
         __asm ( " MRS R10, MSP " ) ;
         __asm ( " STMDB R10, {R0-R7} " ) ;
         __asm ( " SUB R10, R10, #0x20 " ) ;
@@ -352,11 +355,12 @@ void PendSV (void)
 
     }
 
+    /* to save data which is pushed to msp after calling dispatcher */
     __asm ( " PUSH { R9 } " ) ;
     __asm ( " PUSH { R8 } " ) ;
 
 
-
+    /* modify to be return using msp not psp */
     __asm ( " MOV LR, #0xFFF9 " ) ;
     __asm ( " MOVT LR, #0xFFFF " ) ;
 
@@ -484,6 +488,11 @@ void PendSV (void)
     {
         while ( INVALID_TASK == ReadyHighestPriority) ;
     }
+
+    /* enable privilege for enable task frame critical section */
+    __asm ( " MOV R9, #0x00 " ) ;
+    __asm ( " MSR CONTROL, R9 " ) ;
+
 
     return ;
 
