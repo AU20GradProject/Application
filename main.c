@@ -132,7 +132,7 @@ int main(void)
     sendStringPA1("\r\n");
     //delay;
     Init_Systick();
-    StartScheduleTableAbs( 0, 500 );
+    StartScheduleTableAbs( 0, 0 );
     NextScheduleTable( SCHEDULE_TABLE_1 , SCHEDULE_TABLE_2 );
     while (1)
     {
@@ -149,30 +149,30 @@ void TaskRedOn (void)
 {
 
 
-    EventMaskType mask = 0x55555555 ;
-    EventMaskRefType mask_ptr = &mask ;
-    EventMaskRefType * mask_ptr1 = &mask_ptr;
-    EventMaskRefType * mask_ptr2 = mask_ptr1 ;
-    EventMaskRefType * mask_ptr3 = mask_ptr2 ;
-    EventMaskRefType * mask_ptr4 = mask_ptr3 ;
+//    EventMaskType mask = 0x55555555 ;
+//    EventMaskRefType mask_ptr = &mask ;
+//    EventMaskRefType * mask_ptr1 = &mask_ptr;
+//    EventMaskRefType * mask_ptr2 = mask_ptr1 ;
+//    EventMaskRefType * mask_ptr3 = mask_ptr2 ;
+//    EventMaskRefType * mask_ptr4 = mask_ptr3 ;
+//
+//    mask_ptr3 = mask_ptr4 ;
+//    mask_ptr2 = mask_ptr1 ;
 
-    mask_ptr3 = mask_ptr4 ;
-    mask_ptr2 = mask_ptr1 ;
 
-
-    LED_G = 0 ;
-    LED_R = 0 ;
-    LED_B = 0 ;
+//    LED_G = 0 ;
+//    LED_R = 0 ;
+//    LED_B = 0 ;
 
     LED_R = 2 ;
 
-    delay ;
+//    delay ;
 
-    GetResource(RESORCE_4) ;
-
-    GetResource(RESORCE_3) ;
-
-    GetResource(RESORCE_2) ;
+//    GetResource(RESORCE_4) ;
+//
+//    GetResource(RESORCE_3) ;
+//
+//    GetResource(RESORCE_2) ;
 
     /*
     GetResource(RESORCE_1) ;
@@ -182,34 +182,36 @@ void TaskRedOn (void)
     ReleaseResource (RESORCE_1) ;
     */
 
-    ActivateTask( TASK_GREEN_ON ) ;
-    ActivateTask( TASK_GREEN_ON ) ;
-    ActivateTask( TASK_BLUE_ON ) ;
-    ActivateTask( TASK_YELLOW_ON ) ;
-    ActivateTask( TASK_BURBULE_ON ) ;
-    ActivateTask( TASK_AQUA_ON ) ;
-    ActivateTask( TASK_WHITE_ON ) ;
-    ActivateTask( TASK_RED_OFF ) ;
-    ActivateTask( TASK_GREEN_OFF ) ;
-    ActivateTask( TASK_BLUE_OFF ) ;
-    ActivateTask( TASK_YELLOW_OFF ) ;
-    ActivateTask( TASK_BURBULE_OFF ) ;
-    ActivateTask( TASK_AQUA_OFF ) ;
-    ActivateTask( TASK_WHITE_OFF ) ;
+//    ActivateTask( TASK_GREEN_ON ) ;
+//    ActivateTask( TASK_GREEN_ON ) ;
+//    ActivateTask( TASK_BLUE_ON ) ;
+//    ActivateTask( TASK_YELLOW_ON ) ;
+//    ActivateTask( TASK_BURBULE_ON ) ;
+//    ActivateTask( TASK_AQUA_ON ) ;
+//    ActivateTask( TASK_WHITE_ON ) ;
+//    ActivateTask( TASK_RED_OFF ) ;
+//    ActivateTask( TASK_GREEN_OFF ) ;
+//    ActivateTask( TASK_BLUE_OFF ) ;
+//    ActivateTask( TASK_YELLOW_OFF ) ;
+//    ActivateTask( TASK_BURBULE_OFF ) ;
+//    ActivateTask( TASK_AQUA_OFF ) ;
+//    ActivateTask( TASK_WHITE_OFF ) ;
 
-    SetEvent (TASK_RED_OFF, OS_EVENT_MASK_1 ) ;
+//    SetEvent (TASK_RED_OFF, OS_EVENT_MASK_1 ) ;
+//
+//    ReleaseResource (RESORCE_3) ;
+//
+//    ReleaseResource (RESORCE_2) ;
+//
+//    ReleaseResource (RESORCE_3) ;
+//
+//    ReleaseResource (RESORCE_4) ;
 
-    ReleaseResource (RESORCE_3) ;
+//    Schedule () ;
 
-    ReleaseResource (RESORCE_2) ;
+//    ChainTask(TASK_RED_ON) ;
 
-    ReleaseResource (RESORCE_3) ;
-
-    ReleaseResource (RESORCE_4) ;
-
-    Schedule () ;
-
-    ChainTask(TASK_RED_ON) ;
+    TerminateTask() ;
 
     return ;
 }
@@ -244,22 +246,22 @@ void TaskGreenOn (void)
 void TaskBlueOn (void)
 {
 
-    EventMaskType mask = 0x55555555 ;
-    EventMaskRefType mask_ptr = &mask ;
-    EventMaskRefType * mask_ptr1 = &mask_ptr;
-    EventMaskRefType * mask_ptr2 = mask_ptr1 ;
-    EventMaskRefType * mask_ptr3 = mask_ptr2 ;
-    EventMaskRefType * mask_ptr4 = mask_ptr3 ;
-
-    mask_ptr3 = mask_ptr4 ;
-    mask_ptr2 = mask_ptr1 ;
-
-    LED_G = 0 ;
-    LED_R = 0 ;
-    LED_B = 0 ;
+//    EventMaskType mask = 0x55555555 ;
+//    EventMaskRefType mask_ptr = &mask ;
+//    EventMaskRefType * mask_ptr1 = &mask_ptr;
+//    EventMaskRefType * mask_ptr2 = mask_ptr1 ;
+//    EventMaskRefType * mask_ptr3 = mask_ptr2 ;
+//    EventMaskRefType * mask_ptr4 = mask_ptr3 ;
+//
+//    mask_ptr3 = mask_ptr4 ;
+//    mask_ptr2 = mask_ptr1 ;
+//
+//    LED_G = 0 ;
+//    LED_R = 0 ;
+//    LED_B = 0 ;
 
     LED_B = 4 ;
-    delay ;
+//   delay ;
 
     TerminateTask() ;
 
@@ -385,27 +387,27 @@ void TaskRedOff (void)
 {
 
 
-    EventMaskType mask = 0x55555555 ;
-    EventMaskRefType mask_ptr = &mask ;
-    EventMaskRefType * mask_ptr1 = &mask_ptr;
-    EventMaskRefType * mask_ptr2 = mask_ptr1 ;
-    EventMaskRefType * mask_ptr3 = mask_ptr2 ;
-    EventMaskRefType * mask_ptr4 = mask_ptr3 ;
-
-    mask_ptr3 = mask_ptr4 ;
-    mask_ptr2 = mask_ptr1 ;
-
-
-    WaitEvent( OS_EVENT_MASK_1 | OS_EVENT_MASK_2 | OS_EVENT_MASK_3 ) ;
-
-    GetEvent( TASK_RED_OFF, mask_ptr ) ;
-    ClearEvent ( *mask_ptr ) ;
-    WaitEvent( OS_EVENT_MASK_1 | OS_EVENT_MASK_2 | OS_EVENT_MASK_3 ) ;
-
+//    EventMaskType mask = 0x55555555 ;
+//    EventMaskRefType mask_ptr = &mask ;
+//    EventMaskRefType * mask_ptr1 = &mask_ptr;
+//    EventMaskRefType * mask_ptr2 = mask_ptr1 ;
+//    EventMaskRefType * mask_ptr3 = mask_ptr2 ;
+//    EventMaskRefType * mask_ptr4 = mask_ptr3 ;
+//
+//    mask_ptr3 = mask_ptr4 ;
+//    mask_ptr2 = mask_ptr1 ;
+//
+//
+//    WaitEvent( OS_EVENT_MASK_1 | OS_EVENT_MASK_2 | OS_EVENT_MASK_3 ) ;
+//
+//    GetEvent( TASK_RED_OFF, mask_ptr ) ;
+//    ClearEvent ( *mask_ptr ) ;
+//    WaitEvent( OS_EVENT_MASK_1 | OS_EVENT_MASK_2 | OS_EVENT_MASK_3 ) ;
+//
 
     LED_R = 0 ;
 
-    delay ;
+//    delay ;
 
     TerminateTask() ;
 
@@ -441,19 +443,19 @@ void TaskGreenOff (void)
 void TaskBlueOff (void)
 {
 
-    EventMaskType mask = 0x55555555 ;
-    EventMaskRefType mask_ptr = &mask ;
-    EventMaskRefType * mask_ptr1 = &mask_ptr;
-    EventMaskRefType * mask_ptr2 = mask_ptr1 ;
-    EventMaskRefType * mask_ptr3 = mask_ptr2 ;
-    EventMaskRefType * mask_ptr4 = mask_ptr3 ;
-
-    mask_ptr3 = mask_ptr4 ;
-    mask_ptr2 = mask_ptr1 ;
+//    EventMaskType mask = 0x55555555 ;
+//    EventMaskRefType mask_ptr = &mask ;
+//    EventMaskRefType * mask_ptr1 = &mask_ptr;
+//    EventMaskRefType * mask_ptr2 = mask_ptr1 ;
+//    EventMaskRefType * mask_ptr3 = mask_ptr2 ;
+//    EventMaskRefType * mask_ptr4 = mask_ptr3 ;
+//
+//    mask_ptr3 = mask_ptr4 ;
+//    mask_ptr2 = mask_ptr1 ;
 
     LED_B = 0 ;
 
-    delay ;
+//    delay ;
 
     TerminateTask() ;
 
@@ -811,7 +813,7 @@ void TaskGreenOn (void)
     __asm ( " MSR CONTROL, R9 " ) ;
 
     LED_G = 8 ;
-    delay ;
+    //delay ;
 
     TerminateTask() ;
 
@@ -824,7 +826,7 @@ void TaskBlueOn (void)
     __asm ( " ORR R9, R9, #0x02 " ) ;
     __asm ( " MSR CONTROL, R9 " ) ;
     LED_B = 4 ;
-    delay ;
+    //delay ;
 
     TerminateTask() ;
 
