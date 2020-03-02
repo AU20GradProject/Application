@@ -327,23 +327,30 @@ void PendSV (void)
     __asm ( " POP { R9 } " ) ;
 
 
+
     __asm ( " MOV R9, #0xFFF9 " ) ;
     __asm ( " MOVT R9, #0xFFFF " ) ;
 
-    __asm ( " MOV R10, #0x8000 " ) ;
-    __asm ( " MOVT R10, #0x2000 " ) ;
-    __asm ( " MSR MSP, R10 " ) ;
 
-    __asm ( " MRS R10, PSP " ) ;
-    __asm ( " LDMIA R10, {R0-R7} " ) ;
-    __asm ( " ADD R10, R10, #0x20 " ) ;
-    __asm ( " MSR PSP, R10 " ) ;
+    if ( DispatcherLocal_Variable == 0 )
+    {
+        __asm ( " MRS R10, PSP " ) ;
+        __asm ( " LDMIA R10, {R0-R7} " ) ;
+        __asm ( " ADD R10, R10, #0x20 " ) ;
+        __asm ( " MSR PSP, R10 " ) ;
 
 
-    __asm ( " MRS R10, MSP " ) ;
-    __asm ( " STMDB R10, {R0-R7} " ) ;
-    __asm ( " SUB R10, R10, #0x20 " ) ;
-    __asm ( " MSR MSP, R10 " ) ;
+        __asm ( " MRS R10, MSP " ) ;
+        __asm ( " STMDB R10, {R0-R7} " ) ;
+        __asm ( " SUB R10, R10, #0x20 " ) ;
+        __asm ( " MSR MSP, R10 " ) ;
+
+        DispatcherLocal_Variable = 1 ;
+    }
+    else
+    {
+
+    }
 
     __asm ( " PUSH { R9 } " ) ;
     __asm ( " PUSH { R8 } " ) ;
