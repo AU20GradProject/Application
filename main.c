@@ -134,8 +134,6 @@ int main(void)
     Init_Systick();
     StartScheduleTableAbs( 0, 500 );
     NextScheduleTable( SCHEDULE_TABLE_1 , SCHEDULE_TABLE_2 );
-
-
     while (1)
     {
 
