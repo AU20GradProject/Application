@@ -128,16 +128,13 @@ int main(void)
     //ActivateTask( TASK_RED_ON ) ;
 
     UART_GPIO_init();
-    sendStringPA1("Starting: ");
-    sendStringPA1("\r\n");
+    sendStringPA1("hamo\r\n");
     //delay;
     Init_Systick();
-    StartScheduleTableAbs( 0, 0 );
+    StartScheduleTableRel( 0, 1 );
     NextScheduleTable( SCHEDULE_TABLE_1 , SCHEDULE_TABLE_2 );
     while (1)
     {
-
-
 
     }
 }
