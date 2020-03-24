@@ -37,7 +37,7 @@ void ResetISR(void);
 static void NmiSR(void);
 static void FaultISR(void);
 static void IntDefaultHandler(void);
-void PendSV (void) ;
+extern void OsDispatcher (void) ;
 void SVCall (void) ;
 
 //*****************************************************************************
@@ -88,8 +88,8 @@ void (* const g_pfnVectors[])(void) =
     SVCall,                                 // SVCall handler
     IntDefaultHandler,                      // Debug monitor handler
     0,                                      // Reserved
-    PendSV,                                 // The PendSV handler
-    SysTick_Handler,                      // The SysTick handler
+    OsDispatcher,                           // The PendSV handler
+    SysTick_Handler,                        // The SysTick handler
     IntDefaultHandler,                      // GPIO Port A
     IntDefaultHandler,                      // GPIO Port B
     IntDefaultHandler,                      // GPIO Port C
@@ -311,9 +311,9 @@ IntDefaultHandler(void)
 void SVCall (void)
 {
     /* enable privilege level in thread mode */
-    __asm ( " MRS R9, CONTROL " ) ;
-    __asm ( " BIC R9, R9, #0x01 " ) ;
-    __asm ( " MSR CONTROL, R9 " ) ;
+    __asm ( " MRS R10, CONTROL " ) ;
+    __asm ( " BIC R10, R10, #0x01 " ) ;
+    __asm ( " MSR CONTROL, R10 " ) ;
 
     return ;
 
@@ -321,163 +321,3 @@ void SVCall (void)
 
 /*****************************************************************************/
 
-void PendSV (void)
-{
-    __asm ( " POP { R8 } " ) ;
-    __asm ( " POP { R9 } " ) ;
-
-
-    __asm ( " MOV R9, #0xFFF9 " ) ;
-    __asm ( " MOVT R9, #0xFFFF " ) ;
-
-    __asm ( " MOV R10, #0x8000 " ) ;
-    __asm ( " MOVT R10, #0x2000 " ) ;
-    __asm ( " MSR MSP, R10 " ) ;
-
-    __asm ( " MRS R10, PSP " ) ;
-    __asm ( " LDMIA R10, {R0-R7} " ) ;
-    __asm ( " ADD R10, R10, #0x20 " ) ;
-    __asm ( " MSR PSP, R10 " ) ;
-
-
-    __asm ( " MRS R10, MSP " ) ;
-    __asm ( " STMDB R10, {R0-R7} " ) ;
-    __asm ( " SUB R10, R10, #0x20 " ) ;
-    __asm ( " MSR MSP, R10 " ) ;
-
-    __asm ( " PUSH { R9 } " ) ;
-    __asm ( " PUSH { R8 } " ) ;
-
-
-
-    __asm ( " MOV LR, #0xFFF9 " ) ;
-    __asm ( " MOVT LR, #0xFFFF " ) ;
-
-
-
-
-
-
-    if ( INVALID_TASK != RunningTaskPCB_Index )/* case there's preemption to running task */
-    {
-
-
-        /* push value of preempted task's special registers which not pushed automatically into main stack while preemption */
-        __asm ( " MRS R12, PSP " ) ;
-        __asm ( " PUSH {R12} " ) ;
-        __asm ( " PUSH {R4} " ) ;
-        __asm ( " PUSH {R5} " ) ;
-        __asm ( " PUSH {R6} " ) ;
-        __asm ( " PUSH {R7} " ) ;
-        __asm ( " PUSH {R8} " ) ;
-        __asm ( " PUSH {R9} " ) ;
-        __asm ( " PUSH {R10} " ) ;
-        __asm ( " PUSH {R11} " ) ;
-
-
-
-        /* save context of preempted task */
-
-        /* change old task state */
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_State = READY ;
-
-        /* save processor states of preempted task in its pcb, this states are pushed in main stack when exception of task context switching (PendSV) is triggered */
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_PSR = OsMSP_StackFrame_ptr->PSR ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_PC = OsMSP_StackFrame_ptr->PC ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_LR = OsMSP_StackFrame_ptr->LR ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R12 = OsMSP_StackFrame_ptr->R12 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R3 = OsMSP_StackFrame_ptr->R3 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R2 = OsMSP_StackFrame_ptr->R2 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R1 = OsMSP_StackFrame_ptr->R1 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R0 = OsMSP_StackFrame_ptr->R0 ;
-
-        /* this registers are pushed manually */
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_SP = OsMSP_StackFrame_ptr->PSP ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R4 = OsMSP_StackFrame_ptr->R4 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R5 = OsMSP_StackFrame_ptr->R5 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R6 = OsMSP_StackFrame_ptr->R6 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R7 = OsMSP_StackFrame_ptr->R7 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R8 = OsMSP_StackFrame_ptr->R8 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R9 = OsMSP_StackFrame_ptr->R9 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R10 = OsMSP_StackFrame_ptr->R10 ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_R11 = OsMSP_StackFrame_ptr->R11 ;
-
-
-        OsTaskResourceAllocation[ ( OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_Priority ) ] = PreemptionPriority ;
-
-    }
-    else    /* case running task is terminated */
-    {
-
-    }
-
-    if ( INVALID_TASK != ReadyHighestPriority ) /* case there's tasks could enter running state */
-    {
-        __asm ( " MOV R12, #0x7FB4 " ) ;
-        __asm( " MOVT R12, #0x2000 " ) ;
-        __asm ( " MSR MSP, R12 " ) ;
-
-        /* take copy for ReadyTaskPCB_Index, CS for read modify write sequence from ReadyTaskPCB_Index to ReadyHighestPriority*/
-        __asm ( " CPSID i " ) ;
-
-        DispatcherLocal_Variable = ReadyTaskPCB_Index ;
-        PreemptionPriority = OsTasks_Array[ ( OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_ID ) ].OsTaskCeillingPriority_Internal ;
-        __asm ( " CPSIE i " ) ;
-
-        /* write values of next running task into stack to be popped into registers */
-
-        /* popped manually by code */
-        OsMSP_StackFrame_ptr->R11 =  ( VAR( uint32, AUTOMATIC ) )OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_PC ;
-        OsMSP_StackFrame_ptr->R10 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R10 ;
-        OsMSP_StackFrame_ptr->R9 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R9 ;
-        OsMSP_StackFrame_ptr->R8 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R8 ;
-        OsMSP_StackFrame_ptr->R7 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R7 ;
-        OsMSP_StackFrame_ptr->R6 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R6 ;
-        OsMSP_StackFrame_ptr->R5 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R5 ;
-        OsMSP_StackFrame_ptr->R4 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R4 ;
-        OsMSP_StackFrame_ptr->PSP = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_SP ;
-
-        /* will be popped automatically in exception return */
-        OsMSP_StackFrame_ptr->R0 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R0 ;
-        OsMSP_StackFrame_ptr->R1 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R1 ;
-        OsMSP_StackFrame_ptr->R2 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R2 ;
-        OsMSP_StackFrame_ptr->R3 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R3 ;
-        OsMSP_StackFrame_ptr->R12 = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_R12 ;
-        OsMSP_StackFrame_ptr->LR = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_LR ;
-        OsMSP_StackFrame_ptr->PC = OsTaskFrame ;
-        OsMSP_StackFrame_ptr->PSR = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_PSR ;
-
-        OsTaskCode_Ptr = OsTasksPCB_Array[ DispatcherLocal_Variable ].Task_PC ;
-
-
-        /* manual pop for special register ready task */
-
-        /* pop program counter in r11 to use int TaskFrame functino */
-        __asm ( " POP {R11} " ) ;
-        __asm ( " POP {R10} " ) ;
-        __asm ( " POP {R9} " ) ;
-        __asm ( " POP {R8} " ) ;
-        __asm ( " POP {R7} " ) ;
-        __asm ( " POP {R6} " ) ;
-        __asm ( " POP {R5} " ) ;
-        __asm ( " POP {R4} " ) ;
-
-        __asm ( " POP {R12} " ) ;
-        __asm ( " MSR PSP, R12 " ) ;
-
-
-
-
-
-        /* change index of running task pcb and change state for running task */
-        RunningTaskPCB_Index = DispatcherLocal_Variable ;
-        OsTasksPCB_Array[ RunningTaskPCB_Index ].Task_State = RUNNING ;
-    }
-    else /* no ready tasks, go to idle mechanism */
-    {
-        while ( INVALID_TASK == ReadyHighestPriority) ;
-    }
-
-    return ;
-
-}
